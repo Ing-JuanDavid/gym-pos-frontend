@@ -1,0 +1,134 @@
+<aside class="flex h-screen w-72 flex-col border-r border-slate-200 bg-white">
+    <!-- Logo -->
+    <div class="flex items-center gap-3 px-6 py-6 border-b border-slate-200">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white">
+            <svg lucideZap class="size-5"> </svg>
+        </div>
+
+        <div>
+            <h1 class="text-xl font-bold">
+                gym<span class="text-indigo-600">pos</span>
+            </h1>
+
+            <p class="text-[10px] uppercase tracking-widest text-slate-400">
+                Fitness Management
+            </p>
+        </div>
+    </div>
+
+    <!-- Gym Card
+    <div class="px-4">
+        <div class="flex items-center gap-3 rounded-2xl border border-slate-200 p-4">
+            <div
+                class="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100 text-sm font-semibold text-amber-700">
+                N
+            </div>
+
+            <div class="flex-1">
+                <p class="font-medium text-slate-800">
+                    Northstar Fitness
+                </p>
+
+                <p class="text-sm text-slate-400">
+                    Sede Chapinero
+                </p>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Menus -->
+    <div class="mt-8 flex-1 overflow-y-auto px-4">
+        <!-- Operacion -->
+        <div>
+            <p class="mb-4 px-3 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                Operación
+            </p>
+            @for (item of operationMenu; track item.route) {
+
+
+            <a [routerLink]="item.route" routerLinkActive="bg-indigo-50 text-indigo-600"
+                class="mb-1 flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+                <div class="flex items-center gap-3">
+
+                    <svg [lucideIcon]="item.icon" class="h-5 w-5"></svg>
+
+                    <span>
+                        {{ item.label }}
+                    </span>
+
+                </div>
+
+                @if(item.live) {
+                <span class="rounded-md bg-indigo-100 px-2 py-1 text-[10px] font-semibold text-indigo-600">
+                    EN VIVO
+                </span>
+                }
+            </a>
+            }
+        </div>
+
+        <!-- Administración -->
+        <div class="mt-8">
+            <p class="mb-4 px-3 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                Administración
+            </p>
+
+            @for (item of adminMenu; track item.route) {
+            <a [routerLink]="item.route" routerLinkActive="bg-indigo-50 text-indigo-600"
+                class="mb-1 flex items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+                <div class="flex items-center gap-3">
+
+                    <svg [lucideIcon]="item.icon" class="h-5 w-5"></svg>
+
+                    <span>
+                        {{ item.label }}
+                    </span>
+
+                </div>
+            </a>
+            }
+        </div>
+    </div>
+
+    <!-- Help Card
+    <div class="px-4 pb-4">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div class="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600">
+                ?
+            </div>
+
+            <h3 class="mb-2 font-semibold text-slate-800">
+                ¿Necesitas ayuda?
+            </h3>
+
+            <p class="mb-4 text-sm text-slate-500">
+                Estamos aquí para ayudarte a sacar el máximo de Gym POS.
+            </p>
+
+            <button class="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                Visitar centro de ayuda
+            </button>
+        </div>
+    </div> -->
+
+    <!-- Perfil -->
+    <div class="flex items-center gap-3 border-t border-slate-200 px-6 py-4">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 font-semibold text-amber-700">
+            CM
+        </div>
+
+        <div class="flex-1">
+            <p class="text-sm font-semibold text-slate-800">
+                Camila Martínez
+            </p>
+
+            <p class="text-xs text-slate-400">
+                Administradora
+            </p>
+        </div>
+
+        <button class="text-slate-400 hover:text-slate-600">
+            •••
+        </button>
+    </div>
+</aside>
