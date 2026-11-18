@@ -5,15 +5,16 @@ import {
   signal
 } from '@angular/core';
 
-import { CustomerService } from '../../services/customer/customer.service';
+import { CustomerService } from '../../services/customer.service';
 
 import { Customer } from '../../models/customer.model';
-import { CustomerEditModalComponent } from '../../../customers/components/customer-edit-modal/customer-edit-modal';
+import { CustomerEditModalComponent } from '../../components/customer-edit-modal/customer-edit-modal';
+import { ClientCreateComponent } from '../../components/customer-create-modal/customer-create-modal';
 @Component({
   selector: 'app-client-list',
   standalone: true,
   templateUrl: './customer-list.component.html',
-  imports: [CustomerEditModalComponent]
+  imports: [CustomerEditModalComponent, ClientCreateComponent]
 })
 export class CustomerListComponent implements OnInit {
 
@@ -72,6 +73,40 @@ export class CustomerListComponent implements OnInit {
         },
         error: err => {
           console.error(err);
+        }
+      });
+  }
+
+
+  createModalOpen = signal(false);
+
+  openCreateModal(): void {
+    this.createModalOpen.set(true);
+  }
+
+  closeCreateModal(): void {
+    this.createModalOpen.set(false);
+  }
+
+  createCustomer(customerData: any): void {
+
+    this.customerService
+      .create(customerData)
+      .subscribe({
+        next: customer => {
+
+          this.customers.update(customers => [
+            customer,
+            ...customers
+          ]);
+
+          this.closeCreateModal();
+
+          alert(customer.firstName + ' creado');
+        },
+
+        error: error => {
+          console.error(error);
         }
       });
   }

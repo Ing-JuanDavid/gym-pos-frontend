@@ -25,3 +25,17 @@ export interface CustomerUpdate {
     sex?: string;
     birth?: string;
 }
+
+export interface CreateCustomerRequest {
+    nuip: number;
+
+    first_name: string;
+    last_name: string;
+
+    phone: string;
+    email: string;
+
+    sex: string;
+
+    birth?: string | null;
+}

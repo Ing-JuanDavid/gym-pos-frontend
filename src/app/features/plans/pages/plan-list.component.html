@@ -1,0 +1,206 @@
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div>
+
+        <p class="text-xs uppercase tracking-widest text-slate-400">
+            Administración
+        </p>
+
+        <h1 class="mt-2 text-4xl font-bold text-slate-800">
+            Planes
+        </h1>
+
+        <p class="mt-2 text-slate-500">
+            Gestiona las membresías y paquetes disponibles para tus clientes.
+        </p>
+
+    </div>
+
+    <!-- KPI -->
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Total planes
+            </p>
+
+            <h2 class="mt-2 text-3xl font-bold text-slate-800">
+                {{ totalPlans() }}
+            </h2>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Más económico
+            </p>
+
+            <h2 class="mt-2 text-3xl font-bold text-green-600">
+                {{ cheapestPlan() | currency:'COP':'symbol':'1.0-0' }}
+            </h2>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Más costoso
+            </p>
+
+            <h2 class="mt-2 text-3xl font-bold text-indigo-600">
+                {{ mostExpensivePlan() | currency:'COP':'symbol':'1.0-0' }}
+            </h2>
+
+        </div>
+
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+
+        <!-- Header interno -->
+        <div class="flex items-center justify-between border-b border-slate-200 p-6">
+
+            <div>
+
+                <h2 class="text-2xl font-semibold text-slate-800">
+                    Catálogo de planes
+                </h2>
+
+                <p class="mt-1 text-slate-500">
+                    Consulta y administra todos los planes disponibles.
+                </p>
+
+            </div>
+
+            <button (click)="openCreateModal()"
+                class="rounded-xl bg-indigo-600 px-5 py-3 font-medium text-white hover:bg-indigo-700">
+                Nuevo plan
+            </button>
+
+        </div>
+
+        <!-- Search -->
+        <div class="border-b border-slate-200 p-5">
+
+            <input type="text" placeholder="Buscar plan..."
+                class="w-full max-w-md rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-500" />
+
+        </div>
+
+        <!-- Loading -->
+        @if(loading()) {
+
+        <div class="p-10 text-center text-slate-500">
+            Cargando planes...
+        </div>
+
+        }
+
+        @else {
+
+        <!-- Cards -->
+        <div class="grid gap-5 p-6 md:grid-cols-2 xl:grid-cols-3">
+
+            @for(plan of plans(); track plan.planId) {
+
+            <div
+                class="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-indigo-200 hover:shadow-sm">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <h3 class="text-lg font-semibold text-slate-800">
+                            {{ plan.name }}
+                        </h3>
+
+                        <p class="mt-2 text-sm text-slate-500">
+                            {{ plan.description }}
+                        </p>
+
+                    </div>
+
+                    <span class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-600">
+                        {{ plan.duration }} días
+                    </span>
+
+                </div>
+
+                <div class="mt-6 border-t border-slate-100 pt-4">
+
+                    <p class="text-sm text-slate-500">
+                        Precio
+                    </p>
+
+                    <h3 class="mt-1 text-3xl font-bold text-indigo-600">
+                        {{ plan.amount | currency:'COP':'symbol':'1.0-0' }}
+                    </h3>
+
+                </div>
+
+                <div class="mt-4 flex items-center justify-between text-sm">
+
+                    <span class="text-slate-500">
+                        Duración
+                    </span>
+
+                    <span class="font-medium text-slate-700">
+                        {{ plan.duration }} días
+                    </span>
+
+                </div>
+
+                <div class="mt-6 flex gap-2">
+
+                    <button (click)="editPlan(plan)"
+                        class="flex-1 rounded-xl border border-slate-200 py-2 text-sm font-medium hover:bg-slate-50">
+                        Editar
+                    </button>
+
+                    <button (click)="deletePlan(plan)"
+                        class="flex-1 rounded-xl bg-red-50 py-2 text-sm font-medium text-red-600 hover:bg-red-100">
+                        Eliminar
+                    </button>
+
+                </div>
+
+            </div>
+
+            }
+
+        </div>
+
+        <!-- Empty State -->
+        @if(plans().length === 0) {
+
+        <div class="p-12 text-center">
+
+            <h3 class="text-lg font-semibold text-slate-700">
+                No hay planes registrados
+            </h3>
+
+            <p class="mt-2 text-slate-500">
+                Crea el primer plan para comenzar a vender membresías.
+            </p>
+
+        </div>
+
+        }
+
+        }
+
+        <app-plan-edit-modal [plan]="selectedPlan()" [open]="modalOpen()" (close)="closeModal()"
+            (save)="savePlan($event)">
+        </app-plan-edit-modal>
+
+        <app-plan-create-modal [open]="createModalOpen()" (close)="closeCreateModal()" (save)="createPlan($event)">
+        </app-plan-create-modal>
+
+
+    </div>
+
+</div>

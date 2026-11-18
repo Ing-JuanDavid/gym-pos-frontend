@@ -1,0 +1,276 @@
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+
+        <div>
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Ventas
+            </p>
+
+            <h1 class="mt-2 text-4xl font-bold text-slate-800">
+                Punto de venta
+            </h1>
+
+            <p class="mt-2 text-slate-500">
+                Gestiona ventas, pagos y membresías desde un solo lugar.
+            </p>
+
+        </div>
+
+        <button (click)="openCreateModal()"
+            class="rounded-xl bg-indigo-600 px-5 py-3 font-medium text-white transition hover:bg-indigo-700">
+            Nueva venta
+        </button>
+
+    </div>
+
+    <!-- KPI -->
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+
+        <!-- Total ventas -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Ventas registradas
+            </p>
+
+            <h2 class="mt-2 text-3xl font-bold text-slate-800">
+                {{ sales().length }}
+            </h2>
+
+        </div>
+
+        <!-- Pagadas -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Ventas pagadas
+            </p>
+
+            <h2 class="mt-2 text-3xl font-bold text-green-600">
+                {{ paidSales() }}
+            </h2>
+
+        </div>
+
+        <!-- Pendientes -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Pendientes
+            </p>
+
+            <h2 class="mt-2 text-3xl font-bold text-amber-600">
+                {{ pendingSales() }}
+            </h2>
+
+        </div>
+
+    </div>
+
+    <!-- Resumen dinero -->
+    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+        <div class="flex items-center gap-4">
+
+            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-100">
+                <svg lucideWallet class="h-7 w-7 text-indigo-600"></svg>
+            </div>
+            <div>
+
+                <h2 class="text-3xl font-bold text-slate-800">
+                    {{ totalRevenue() | currency:'COP':'symbol':'1.0-0' }}
+                </h2>
+
+                <p class="text-slate-500">
+                    Total vendido
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Tabla -->
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+
+        <!-- Toolbar -->
+
+        <div class="flex items-center justify-between border-b border-slate-200 p-5">
+
+            <input type="text" placeholder="Buscar por venta o documento..." [value]="search()"
+                (input)="search.set($any($event.target).value)"
+                class="w-full max-w-md rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-500" />
+            <div class="flex gap-3">
+
+                <select class="rounded-xl border border-slate-200 px-4 py-3 text-sm"
+                    (change)="selectedStatus.set($any($event.target).value)">
+
+                    <option value="ALL">
+                        Todos
+                    </option>
+
+                    <option value="PAGADA">
+                        Pagadas
+                    </option>
+
+                    <option value="PARCIAL">
+                        Parciales
+                    </option>
+
+                    <option value="PENDIENTE">
+                        Pendientes
+                    </option>
+
+                </select>
+
+                <button class="rounded-xl border border-slate-200 px-4 py-3 text-sm hover:bg-slate-50">
+                    Exportar
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Table -->
+
+        <table class="w-full">
+
+            <thead>
+
+                <tr class="bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-500">
+
+                    <th class="p-4">
+                        Venta
+                    </th>
+
+                    <th>
+                        Cliente
+                    </th>
+
+                    <th>
+                        Fecha
+                    </th>
+
+                    <th>
+                        Total
+                    </th>
+
+                    <th>
+                        Estado
+                    </th>
+
+                    <th></th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @for(
+                sale of filteredSales();
+                track sale.saleId
+                ) {
+
+                <tr class="border-t border-slate-100 hover:bg-slate-50">
+
+                    <td class="p-4">
+                        #{{ sale.saleId }}
+                    </td>
+
+                    <td>
+                        {{ sale.nuip }}
+                    </td>
+
+                    <td>
+                        {{ sale.createdAt | date:'dd MMM yyyy, hh:mm a' }}
+                    </td>
+
+                    <td>
+                        {{ sale.total | currency:'COP':'symbol':'1.0-0' }}
+                    </td>
+
+                    <td>
+
+                        @if(
+                        sale.status === 'PAGADA'
+                        ) {
+
+                        <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                            Pagada
+                        </span>
+
+                        }
+
+                        @if(
+                        sale.status === 'PARCIAL'
+                        ) {
+
+                        <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
+                            Parcial
+                        </span>
+
+                        }
+
+                        @if(
+                        sale.status === 'PENDIENTE'
+                        ) {
+
+                        <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
+                            Pendiente
+                        </span>
+
+                        }
+
+                    </td>
+
+                    <td>
+
+                        <button class="rounded-lg px-3 py-2 hover:bg-slate-100">
+                            •••
+                        </button>
+
+                    </td>
+
+                </tr>
+
+                }
+
+            </tbody>
+
+        </table>
+
+        <!-- Footer -->
+
+        <div class="flex items-center justify-between border-t border-slate-200 p-4">
+
+            <span class="text-sm text-slate-500">
+                Mostrando
+                {{ sales().length }}
+                registros
+            </span>
+
+            <div class="flex gap-2">
+
+                <button class="rounded-lg border border-slate-200 px-3 py-2">
+                    Anterior
+                </button>
+
+                <button class="rounded-lg border border-slate-200 px-3 py-2">
+                    Siguiente
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<app-sale-create-modal [open]="createModalOpen()" (close)="closeCreateModal()" (save)="createSale($event)">
+</app-sale-create-modal>

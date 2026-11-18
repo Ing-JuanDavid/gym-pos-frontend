@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 
 import { map, Observable } from 'rxjs';
 
-import { CustomerDto, CustomerUpdate } from '../../models/customer.dto';
-import { Customer } from '../../models/customer.model';
-import { CustomerMapper } from '../../mappers/customer.mappper';
+import { CustomerDto, CustomerUpdate, CreateCustomerRequest } from '../models/customer.dto';
+import { Customer } from '../models/customer.model';
+import { CustomerMapper } from '../mappers/customer.mappper';
 @Injectable({
   providedIn: 'root'
 })
@@ -37,6 +37,20 @@ export class CustomerService {
         map(customers =>
           customers.map(CustomerMapper.toModel)
         )
+      );
+  }
+
+  create(
+    payload: CreateCustomerRequest
+  ): Observable<Customer> {
+
+    return this.http
+      .post<CustomerDto>(
+        this.apiUrl,
+        payload
+      )
+      .pipe(
+        map(CustomerMapper.toModel)
       );
   }
 

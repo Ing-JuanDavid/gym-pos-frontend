@@ -1,6 +1,9 @@
 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
     <!-- Header -->
     <div class="flex items-center justify-between border-b border-slate-200 p-5">
+
+
+
         <div>
             <h2 class="font-semibold text-slate-800">
                 Directorio de clientes
@@ -11,7 +14,7 @@
             </p>
         </div>
 
-        <button class="rounded-xl bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
+        <button class="rounded-xl bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700" (click)="openCreateModal()">
             Nuevo cliente
         </button>
     </div>
@@ -144,6 +147,12 @@
         </tbody>
 
     </table>
+
+
+    <!-- create modal -->
+
+    <app-client-create [open]="createModalOpen()" (close)="closeCreateModal()" (save)="createCustomer($event)">
+    </app-client-create>
 
 
     <!-- edit modal -->
