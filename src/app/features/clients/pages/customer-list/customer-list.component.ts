@@ -10,16 +10,22 @@ import { CustomerService } from '../../services/customer.service';
 import { Customer } from '../../models/customer.model';
 import { CustomerEditModalComponent } from '../../components/customer-edit-modal/customer-edit-modal';
 import { ClientCreateComponent } from '../../components/customer-create-modal/customer-create-modal';
+import { CapturePhotoModalComponent } from '../../components/capture-photo-modal/capture-photo-modal.component';
+import { CustomerPhotoService } from '../../services/customer-photo.service';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-client-list',
   standalone: true,
   templateUrl: './customer-list.component.html',
-  imports: [CustomerEditModalComponent, ClientCreateComponent]
+  imports: [CustomerEditModalComponent, ClientCreateComponent, CapturePhotoModalComponent, DatePipe]
 })
 export class CustomerListComponent implements OnInit {
 
   private readonly customerService =
     inject(CustomerService);
+
+  private readonly photoService =
+    inject(CustomerPhotoService);
 
   customers =
     signal<Customer[]>([]);
@@ -30,6 +36,17 @@ export class CustomerListComponent implements OnInit {
   selectedCustomer = signal<Customer | null>(null);
 
   modalOpen = signal(false);
+
+  // ── Foto ──
+
+  /** Cliente al que se le está tomando la foto (null = modal cerrado). */
+  photoCustomer = signal<Customer | null>(null);
+
+  /** Fotos tomadas en esta sesión: tienen prioridad sobre la que traiga el listado. */
+  private readonly freshPhotos = signal<Record<number, string>>({});
+
+  /** Clientes cuya imagen no cargó: se vuelve a mostrar las iniciales. */
+  private readonly brokenPhotos = signal<ReadonlySet<number>>(new Set());
 
   ngOnInit(): void {
 
@@ -49,6 +66,53 @@ export class CustomerListComponent implements OnInit {
           this.loading.set(false);
         }
       });
+  }
+
+  openPhotoModal(customer: Customer): void {
+    this.photoCustomer.set(customer);
+  }
+
+  closePhotoModal(): void {
+    this.photoCustomer.set(null);
+  }
+
+  onPhotoCaptured(url: string): void {
+
+    const customer = this.photoCustomer();
+
+    if (!customer) {
+      return;
+    }
+
+    this.freshPhotos.update(photos => ({ ...photos, [customer.nuip]: url }));
+
+    this.brokenPhotos.update(broken => {
+      const next = new Set(broken);
+      next.delete(customer.nuip);
+      return next;
+    });
+  }
+
+  /** URL de la foto a mostrar en el avatar, o null para usar las iniciales. */
+  photoFor(customer: Customer): string | null {
+
+    if (this.brokenPhotos().has(customer.nuip)) {
+      return null;
+    }
+
+    const fresh = this.freshPhotos()[customer.nuip];
+
+    if (fresh) {
+      return fresh;
+    }
+
+    return customer.photoUrl
+      ? this.photoService.toAbsolute(customer.photoUrl)
+      : null;
+  }
+
+  markPhotoBroken(customer: Customer): void {
+    this.brokenPhotos.update(broken => new Set(broken).add(customer.nuip));
   }
 
   deleteCustomer(customer: Customer): void {

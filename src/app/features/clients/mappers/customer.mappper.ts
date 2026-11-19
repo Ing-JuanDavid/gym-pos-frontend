@@ -21,7 +21,9 @@ export class CustomerMapper {
 
             membershipName: dto.membership_name,
 
-            lastAttendance: dto.last_attendance
+            lastAttendance: dto.last_attendance,
+
+            photoUrl: dto.photo_url ?? undefined
         };
     }
 

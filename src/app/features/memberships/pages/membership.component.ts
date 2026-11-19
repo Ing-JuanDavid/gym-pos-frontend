@@ -9,12 +9,13 @@ import {
 import { MembershipService } from '../services/membership.service';
 import { MembershipDetail } from '../models/membership.model';
 import { LucideIdCard } from '@lucide/angular';
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-membership-list',
     standalone: true,
     templateUrl: './membership-list.component.html',
-    imports: [LucideIdCard]
+    imports: [LucideIdCard, DatePipe]
 })
 export class MembershipListComponent
     implements OnInit {

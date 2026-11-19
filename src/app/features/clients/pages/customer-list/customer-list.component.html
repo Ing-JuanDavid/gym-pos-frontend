@@ -57,11 +57,20 @@
 
                     <div class="flex items-center gap-3">
 
+                        @if (photoFor(customer); as photo) {
+
+                        <img [src]="photo" [alt]="'Foto de ' + customer.firstName" (error)="markPhotoBroken(customer)"
+                            class="h-10 w-10 rounded-full object-cover" />
+
+                        } @else {
+
                         <div
                             class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 font-semibold text-indigo-600">
                             {{ customer.firstName[0] }}
                             {{ customer.lastName[0] }}
                         </div>
+
+                        }
 
                         <div>
 
@@ -104,7 +113,7 @@
 
                     @if(customer.lastAttendance) {
 
-                    {{ customer.lastAttendance }}
+                    {{ customer.lastAttendance | date:'dd MMM yyyy, hh:mm a' }}
 
                     } @else {
 
@@ -119,6 +128,19 @@
                 <td>
 
                     <div class="flex gap-2">
+
+                        <button (click)="openPhotoModal(customer)"
+                            class="flex items-center gap-2 rounded-lg bg-indigo-50 px-3 py-2 text-indigo-600 hover:bg-indigo-100">
+
+                            <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 8h3l2-3h8l2 3h3v11H3z" />
+                                <circle cx="12" cy="13" r="3.5" />
+                            </svg>
+
+                            Foto
+
+                        </button>
 
                         <button (click)="editCustomer(customer)"
                             class="rounded-lg bg-blue-50 px-3 py-2 text-blue-600 hover:bg-blue-100">
@@ -159,6 +181,11 @@
     <app-customer-edit-modal [open]="modalOpen()" [customer]="selectedCustomer()" (close)="closeModal()"
         (save)="saveCustomer($event)">
     </app-customer-edit-modal>
+
+    <!-- photo modal -->
+    @if (photoCustomer(); as customer) {
+    <app-capture-photo-modal [customer]="customer" (closed)="closePhotoModal()" (captured)="onPhotoCaptured($event)" />
+    }
 
     <!-- Footer -->
     <div class="flex items-center justify-between border-t border-slate-200 px-5 py-4 text-sm text-slate-500">

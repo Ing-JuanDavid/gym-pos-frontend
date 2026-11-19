@@ -15,6 +15,8 @@ export interface CustomerDto {
     membership_name: string | null;
 
     last_attendance: string | null;
+
+    photo_url?: string | null;
 }
 
 export interface CustomerUpdate {

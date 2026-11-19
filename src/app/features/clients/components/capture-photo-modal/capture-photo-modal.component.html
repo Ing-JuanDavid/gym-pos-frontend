@@ -1,0 +1,168 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6" (click)="close()">
+
+    <div class="flex w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+        role="dialog" aria-modal="true" aria-labelledby="photo-title" (click)="$event.stopPropagation()">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-200 p-6">
+
+            <div>
+
+                <h2 id="photo-title" class="text-2xl font-semibold text-slate-800">
+                    Tomar foto
+                </h2>
+
+                <p class="text-slate-500">
+                    {{ name() }} · Documento {{ customer().nuip }}
+                </p>
+
+            </div>
+
+            <button (click)="close()" [disabled]="state() === 'capturing'" aria-label="Cerrar"
+                class="rounded-lg p-2 hover:bg-slate-100 disabled:opacity-40">
+                ✕
+            </button>
+
+        </div>
+
+        <!-- Body -->
+        <div class="p-6">
+
+            @switch (state()) {
+
+            @case ('capturing') {
+
+            <div class="flex aspect-[4/3] w-full flex-col items-center justify-center gap-4 rounded-2xl bg-slate-100"
+                role="status">
+
+                <svg class="size-10 animate-spin text-indigo-600" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity=".2" stroke-width="3" />
+                    <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+
+                <div class="text-center">
+                    <p class="font-medium text-slate-700">Capturando…</p>
+                    <p class="mt-1 text-sm text-slate-500">Puede tardar hasta 15 segundos. No cierres esta ventana.</p>
+                </div>
+
+            </div>
+
+            }
+
+            @case ('preview') {
+
+            <div class="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-slate-100">
+
+                @if (imageFailed()) {
+
+                <div class="flex h-full items-center justify-center p-6 text-center text-sm text-slate-500">
+                    La foto se guardó, pero no se pudo cargar la imagen. Verifica que el servidor publique la
+                    carpeta <span class="mx-1 font-mono">/media</span>.
+                </div>
+
+                } @else {
+
+                <img [src]="photoUrl()" [alt]="'Foto capturada de ' + name()" (error)="imageFailed.set(true)"
+                    class="h-full w-full object-contain" />
+
+                }
+
+            </div>
+
+            <p class="mt-3 text-sm text-slate-500">
+                La foto ya quedó guardada como foto del cliente. Si no salió bien, repite la captura.
+            </p>
+
+            }
+
+            @case ('error') {
+
+            <div class="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700" role="alert">
+                <p class="font-medium">No se pudo tomar la foto</p>
+                <p class="mt-1">{{ error() }}</p>
+            </div>
+
+            }
+
+            @default {
+
+            <div class="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-2xl bg-slate-100">
+
+                <div class="grid size-14 place-items-center rounded-full bg-white text-indigo-600 shadow-sm">
+                    <svg viewBox="0 0 24 24" class="size-7" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 8h3l2-3h8l2 3h3v11H3z" />
+                        <circle cx="12" cy="13" r="3.5" />
+                    </svg>
+                </div>
+
+                <p class="max-w-xs text-center text-sm text-slate-500">
+                    Pide al cliente que mire a la cámara y pulsa <span
+                        class="font-medium text-slate-700">Capturar</span>.
+                </p>
+
+            </div>
+
+            <p class="mt-3 flex items-center gap-2 text-sm text-slate-500">
+                <span class="size-2 rounded-full" [class.bg-green-500]="cameraOnline()"
+                    [class.bg-red-500]="!cameraOnline()"></span>
+                {{ cameraOnline() ? 'Cámara en línea' : 'Cámara sin conexión' }}
+            </p>
+
+            }
+
+            }
+
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 border-t border-slate-200 p-6">
+
+            @switch (state()) {
+
+            @case ('capturing') {
+            <button type="button" disabled class="rounded-xl bg-slate-300 px-5 py-3 font-medium text-white">
+                Capturando…
+            </button>
+            }
+
+            @case ('preview') {
+            <button type="button" (click)="capture()"
+                class="rounded-xl border border-slate-200 px-5 py-3 font-medium text-slate-700 transition hover:bg-slate-50">
+                Repetir
+            </button>
+            <button type="button" (click)="close()"
+                class="rounded-xl bg-indigo-600 px-5 py-3 font-medium text-white transition hover:bg-indigo-700">
+                Listo
+            </button>
+            }
+
+            @case ('error') {
+            <button type="button" (click)="close()"
+                class="rounded-xl border border-slate-200 px-5 py-3 font-medium text-slate-700 transition hover:bg-slate-50">
+                Cerrar
+            </button>
+            <button type="button" (click)="capture()" [disabled]="!cameraOnline()"
+                class="rounded-xl bg-indigo-600 px-5 py-3 font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300">
+                Reintentar
+            </button>
+            }
+
+            @default {
+            <button type="button" (click)="close()"
+                class="rounded-xl border border-slate-200 px-5 py-3 font-medium text-slate-700 transition hover:bg-slate-50">
+                Cancelar
+            </button>
+            <button type="button" (click)="capture()" [disabled]="!cameraOnline()"
+                class="rounded-xl bg-indigo-600 px-5 py-3 font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300">
+                Capturar
+            </button>
+            }
+
+            }
+
+        </div>
+
+    </div>
+
+</div>

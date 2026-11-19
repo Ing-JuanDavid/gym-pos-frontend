@@ -17,7 +17,10 @@ export interface Customer {
     sex: string;
     birth?: string;
 
+    photoUrl?: string | null;
+
     membershipName?: string | null;
     lastAttendance?: string | null;
+
 }
 
