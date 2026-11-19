@@ -26,6 +26,70 @@
 
     </div>
 
+    <!-- Periodo -->
+    <div class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4">
+
+        <div class="inline-flex rounded-xl border border-slate-200 p-1" role="group" aria-label="Tipo de periodo">
+
+            @for (m of modes; track m.value) {
+
+            <button type="button" (click)="setMode(m.value)" [attr.aria-pressed]="periodMode() === m.value"
+                class="rounded-lg px-4 py-2 text-sm font-medium transition" [class]="periodMode() === m.value
+                    ? 'bg-indigo-600 text-white'
+                    : 'text-slate-600 hover:bg-slate-50'">
+                {{ m.label }}
+            </button>
+
+            }
+
+        </div>
+
+        @if (periodMode() !== 'ALL') {
+
+        <div class="flex items-center gap-2">
+
+            <button type="button" (click)="shift(-1)"
+                [attr.aria-label]="periodMode() === 'DAY' ? 'Día anterior' : 'Mes anterior'"
+                class="rounded-xl border border-slate-200 px-3 py-2 hover:bg-slate-50">
+                ‹
+            </button>
+
+            @if (periodMode() === 'DAY') {
+
+            <input type="date" [value]="selectedDay()" (change)="onDayChange($any($event.target).value)"
+                aria-label="Seleccionar día"
+                class="rounded-xl border border-slate-200 px-4 py-2 text-sm outline-none focus:border-indigo-500" />
+
+            } @else {
+
+            <input type="month" [value]="selectedMonth()" (change)="onMonthChange($any($event.target).value)"
+                aria-label="Seleccionar mes"
+                class="rounded-xl border border-slate-200 px-4 py-2 text-sm outline-none focus:border-indigo-500" />
+
+            }
+
+            <button type="button" (click)="shift(1)"
+                [attr.aria-label]="periodMode() === 'DAY' ? 'Día siguiente' : 'Mes siguiente'"
+                class="rounded-xl border border-slate-200 px-3 py-2 hover:bg-slate-50">
+                ›
+            </button>
+
+            <button type="button" (click)="goToToday()"
+                class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                {{ periodMode() === 'DAY' ? 'Hoy' : 'Este mes' }}
+            </button>
+
+        </div>
+
+        }
+
+        <p class="text-sm text-slate-500">
+            Mostrando:
+            <span class="font-medium text-slate-700">{{ periodLabel() }}</span>
+        </p>
+
+    </div>
+
     <!-- KPI -->
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
 
@@ -37,7 +101,7 @@
             </p>
 
             <h2 class="mt-2 text-3xl font-bold text-slate-800">
-                {{ sales().length }}
+                {{ totalSales() }}
             </h2>
 
         </div>
@@ -228,14 +292,42 @@
 
                     </td>
 
-                    <td>
+                    <td class="pr-4 text-right">
 
-                        <button class="rounded-lg px-3 py-2 hover:bg-slate-100">
-                            •••
-                        </button>
+                        <div class="flex justify-end gap-2">
+
+                            <button (click)="openResume(sale)"
+                                class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">
+                                Resumen
+                            </button>
+
+                            @if (sale.status !== 'PAGADA') {
+                            <button (click)="openPayment(sale)"
+                                class="rounded-lg border border-indigo-200 px-3 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50">
+                                Cobrar
+                            </button>
+                            }
+
+                        </div>
 
                     </td>
 
+                </tr>
+
+                } @empty {
+
+                <tr>
+                    <td colspan="6" class="p-10 text-center">
+
+                        <p class="font-medium text-slate-600">
+                            No hay ventas en este periodo
+                        </p>
+
+                        <p class="mt-1 text-sm text-slate-500">
+                            Cambia la fecha o el filtro, o crea una nueva venta.
+                        </p>
+
+                    </td>
                 </tr>
 
                 }
@@ -250,7 +342,7 @@
 
             <span class="text-sm text-slate-500">
                 Mostrando
-                {{ sales().length }}
+                {{ filteredSales().length }}
                 registros
             </span>
 
@@ -274,3 +366,11 @@
 
 <app-sale-create-modal [open]="createModalOpen()" (close)="closeCreateModal()" (save)="createSale($event)">
 </app-sale-create-modal>
+
+@if (selectedSale(); as sale) {
+<app-sale-payment-modal [sale]="sale" (closed)="closePayment()" (paymentsChanged)="loadSales()" />
+}
+
+@if (resumeSale(); as sale) {
+<app-sale-resume-modal [saleId]="sale.saleId" (closed)="closeResume()" (payRequested)="payFromResume()" />
+}

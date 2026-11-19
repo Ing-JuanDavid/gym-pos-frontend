@@ -4,6 +4,8 @@ import { CustomerListComponent } from './features/clients/pages/customer-list/cu
 import { PlanListComponent } from './features/plans/pages/plan.component';
 import { MembershipListComponent } from './features/memberships/pages/membership.component';
 import { SaleListComponent } from './features/sales/pages/sale.component';
+import { AccessControlPage } from './features/access-control/pages/access-control.component';
+import { AttendancePageComponent } from './features/attendances/pages/attendance-page.component';
 CustomerListComponent
 export const routes: Routes = [
     {
@@ -32,6 +34,16 @@ export const routes: Routes = [
             {
                 path: 'sales',
                 component: SaleListComponent
+            }
+            ,
+            {
+                path: 'access-control',
+                component: AccessControlPage
+            }
+            ,
+            {
+                path: 'attendance',
+                component: AttendancePageComponent
             }
         ]
     },

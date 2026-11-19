@@ -1,0 +1,74 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6" (click)="closed.emit()">
+
+    <div class="flex w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+        role="dialog" aria-modal="true" aria-labelledby="enroll-title" (click)="$event.stopPropagation()">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-200 p-6">
+            <div>
+                <h2 id="enroll-title" class="text-2xl font-semibold text-slate-800">Registrar huella</h2>
+                <p class="text-slate-500">Asocia una huella a un cliente desde el lector.</p>
+            </div>
+            <button (click)="closed.emit()" aria-label="Cerrar" class="rounded-lg p-2 hover:bg-slate-100">✕</button>
+        </div>
+
+        <!-- Body -->
+        <div class="space-y-5 p-6">
+
+            <div>
+                <label for="enroll-nuip" class="mb-2 block text-sm font-medium text-slate-700">
+                    Documento del cliente
+                </label>
+
+                <div class="flex gap-3">
+                    <input id="enroll-nuip" type="text" inputmode="numeric" autocomplete="off" autofocus
+                        [value]="nuip()" (input)="onInput($any($event.target).value)" (keyup.enter)="search()"
+                        placeholder="Ej. 1064602258"
+                        class="flex-1 rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-500" />
+
+                    <button type="button" (click)="search()" [disabled]="searching() || !nuip().trim()"
+                        class="rounded-xl bg-indigo-600 px-6 text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300">
+                        @if (searching()) { Buscando... } @else { Buscar }
+                    </button>
+                </div>
+
+                @if (error()) {
+                <p class="mt-2 text-sm text-red-600" role="alert">{{ error() }}</p>
+                }
+            </div>
+
+            @if (customer(); as c) {
+            <div class="rounded-2xl border border-green-200 bg-green-50 p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="font-semibold text-slate-800">{{ c.firstName }} {{ c.lastName }}</h4>
+                        <p class="mt-1 text-sm text-slate-600">Documento: {{ c.nuip }}</p>
+                    </div>
+                    <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                        Cliente encontrado
+                    </span>
+                </div>
+            </div>
+            }
+
+            <div class="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 text-sm text-indigo-700">
+                El lector te guiará: coloca el dedo, retíralo y vuelve a colocarlo.
+                Sigue el avance en la tarjeta del lector.
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 border-t border-slate-200 p-6">
+            <button type="button" (click)="closed.emit()"
+                class="rounded-xl border border-slate-200 px-5 py-3 font-medium text-slate-700 transition hover:bg-slate-50">
+                Cancelar
+            </button>
+            <button type="button" (click)="start()" [disabled]="!customer()"
+                class="rounded-xl bg-indigo-600 px-5 py-3 font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300">
+                Iniciar registro
+            </button>
+        </div>
+
+    </div>
+</div>

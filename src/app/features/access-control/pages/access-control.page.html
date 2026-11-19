@@ -1,0 +1,224 @@
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex items-start justify-between gap-4">
+
+        <div>
+
+            <p class="flex items-center gap-2 text-xs uppercase tracking-widest text-slate-400">
+                <span class="size-1.5 rounded-full" [class.bg-green-500]="realtime.link() === 'open'"
+                    [class.bg-amber-500]="realtime.link() !== 'open'"></span>
+                Recepción · Punto de acceso
+            </p>
+
+            <h1 class="mt-2 text-4xl font-bold text-slate-800">
+                Control de acceso
+            </h1>
+
+            <p class="mt-2 text-slate-500">
+                Validación biométrica en tiempo real para tu sede.
+            </p>
+
+        </div>
+
+        <div class="flex gap-3">
+
+            <button (click)="historyOpen.set(true)"
+                class="rounded-xl border border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 transition hover:bg-slate-50">
+                Historial de hoy
+            </button>
+
+            <button (click)="enrollOpen.set(true)" [disabled]="!canEnroll()"
+                [attr.title]="readerOnline() ? null : 'El lector no está conectado'"
+                class="rounded-xl bg-indigo-600 px-5 py-3 font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300">
+                {{ enrolling() ? 'Registrando…' : 'Registrar huella' }}
+            </button>
+
+        </div>
+
+    </div>
+
+    @if (enrollResult(); as r) {
+    <div class="flex items-start justify-between gap-4 rounded-2xl border p-4 text-sm"
+        [class.border-green-200]="r.kind === 'ok'" [class.bg-green-50]="r.kind === 'ok'"
+        [class.text-green-700]="r.kind === 'ok'" [class.border-red-200]="r.kind === 'error'"
+        [class.bg-red-50]="r.kind === 'error'" [class.text-red-700]="r.kind === 'error'"
+        [attr.role]="r.kind === 'error' ? 'alert' : 'status'">
+        <span>{{ r.text }}</span>
+        <button (click)="enrollResult.set(null)" aria-label="Cerrar aviso"
+            class="font-medium hover:opacity-70">✕</button>
+    </div>
+    }
+
+    <!-- Contenido -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+
+        <!-- Lector -->
+        <app-reader-stage [device]="realtime.biometric()" [link]="realtime.link()" [reading]="realtime.reading()"
+            [access]="realtime.lastAccess()" [enroll]="realtime.enroll()" />
+
+        <!-- Columna derecha -->
+        <div class="space-y-6">
+
+            <!-- Actividad de hoy -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+                <p class="text-xs uppercase tracking-widest text-slate-400">
+                    {{ dateLabel() }}
+                </p>
+
+                <h2 class="mt-2 text-lg font-semibold text-slate-800">
+                    Actividad de hoy
+                </h2>
+
+                <p class="mt-5 flex items-baseline gap-3">
+                    <span class="text-4xl font-bold text-slate-800">{{ entriesToday() }}</span>
+                    <span class="text-sm text-slate-400">ingresos permitidos en esta sesión</span>
+                </p>
+
+                <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 text-sm">
+
+                    <span class="text-slate-400">Último evento</span>
+
+                    @if (lastEvent(); as e) {
+                    <span class="font-medium text-slate-800">{{ e.at | date:'hh:mm a' }}</span>
+                    } @else {
+                    <span class="font-medium text-slate-800">Sin eventos</span>
+                    }
+
+                </div>
+
+            </div>
+
+            <!-- Dispositivos -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <p class="text-xs uppercase tracking-widest text-slate-400">
+                            Estado del sistema
+                        </p>
+
+                        <h2 class="mt-2 text-lg font-semibold text-slate-800">
+                            Dispositivos
+                        </h2>
+
+                    </div>
+
+                    @if (realtime.link() === 'open') {
+                    <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                        Conexión activa
+                    </span>
+                    } @else {
+                    <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
+                        Conexión pendiente
+                    </span>
+                    }
+
+                </div>
+
+                <div class="mt-5 space-y-4">
+
+                    @for (row of rows(); track row.key) {
+
+                    @let state = rowState(row.device);
+
+                    <div class="flex items-center gap-3">
+
+                        <div class="grid size-11 shrink-0 place-items-center rounded-xl bg-indigo-50 text-indigo-600">
+
+                            @if (row.key === 'camera') {
+                            <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 8h3l2-3h8l2 3h3v11H3z" />
+                                <circle cx="12" cy="13" r="3.5" />
+                            </svg>
+                            } @else {
+                            <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="6" y="6" width="12" height="12" rx="2" />
+                                <path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4" />
+                            </svg>
+                            }
+
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+
+                            <p class="text-sm font-semibold text-slate-800">{{ row.title }}</p>
+
+                            <p class="truncate text-xs text-slate-400">
+                                {{ row.model }} ·
+                                @if (!row.device) {
+                                sin conexión registrada
+                                } @else if (state === 'offline' && row.device.lastSeen) {
+                                {{ row.device.deviceId }} · visto {{ row.device.lastSeen | date:'hh:mm a' }}
+                                } @else {
+                                {{ row.device.deviceId }}
+                                }
+                            </p>
+
+                        </div>
+
+                        <span class="flex items-center gap-2 text-xs text-slate-500">
+                            <span class="size-2 rounded-full" [class.bg-green-500]="state === 'online'"
+                                [class.bg-red-500]="state === 'offline'"
+                                [class.bg-amber-500]="state === 'unknown'"></span>
+                            {{ stateLabel(state) }}
+                        </span>
+
+                    </div>
+
+                    }
+
+                </div>
+
+            </div>
+
+            <!-- Aviso -->
+            <div class="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 text-xs text-indigo-700">
+                Deja esta pantalla abierta en recepción. Los accesos se actualizan automáticamente.
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Demostración (solo desarrollo) -->
+    @if (dev) {
+
+    <div
+        class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 px-5 py-3 text-xs text-slate-500">
+
+        <span>
+            <span class="font-semibold text-slate-700">Vista de demostración</span>
+            · Prueba la experiencia de ingreso
+        </span>
+
+        <span class="flex gap-5">
+
+            <button (click)="simulateAccess(true)" class="font-medium text-green-600 hover:underline">
+                Simular acceso permitido
+            </button>
+
+            <button (click)="simulateAccess(false)" class="font-medium text-red-600 hover:underline">
+                Simular denegado
+            </button>
+
+        </span>
+
+    </div>
+
+    }
+
+</div>
+
+@if (historyOpen()) {
+<app-access-history-modal [events]="todayFeed()" (closed)="historyOpen.set(false)" />
+}
+
+@if (enrollOpen()) {
+<app-enroll-fingerprint-modal (closed)="enrollOpen.set(false)" (started)="startEnroll($event)" />
+}

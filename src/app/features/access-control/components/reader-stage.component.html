@@ -1,0 +1,175 @@
+<section class="stage" [attr.data-view]="view()" aria-live="assertive">
+
+    <!-- Anillos de fondo -->
+    <div class="rings" aria-hidden="true">
+        <div class="ring r1"></div>
+        <div class="ring r2"></div>
+        <div class="ring r3"></div>
+    </div>
+
+    <!-- Barra superior -->
+    <div class="relative z-10 flex items-center justify-between text-xs">
+
+        <span class="flex items-center gap-2 font-medium uppercase tracking-widest text-slate-300">
+            <span class="accent-dot size-1.5 rounded-full"></span>
+            Lector principal
+        </span>
+
+        <span class="flex items-center gap-3 text-slate-300">
+
+            <span class="flex items-center gap-2">
+                <span class="size-1.5 rounded-full" [class]="connection().dot"></span>
+                {{ connection().text }}
+            </span>
+
+            @if (device(); as d) {
+            <span class="rounded-md border border-white/15 px-2 py-1 font-mono text-[11px] uppercase">
+                {{ d.deviceId }}
+            </span>
+            }
+
+        </span>
+
+    </div>
+
+    <!-- Contenido -->
+    <div class="content">
+
+        @switch (view()) {
+
+        @case ('granted') {
+
+        <div class="avatar pop">
+
+            @if (shown()?.customer?.photoUrl; as photo) {
+            <img [src]="photo" [alt]="'Foto de ' + name()" />
+            } @else {
+            <span class="initials">{{ initials() }}</span>
+            }
+
+            <svg class="badge" viewBox="0 0 52 52" aria-hidden="true">
+                <circle cx="26" cy="26" r="24" />
+                <path d="M14 27l8 8 16-17" />
+            </svg>
+
+        </div>
+
+        <p class="pill">{{ typeLabel(shown()?.accessType ?? null) }} registrada</p>
+
+        <h2 class="title">{{ name() }}</h2>
+
+        <p class="subtitle">
+            Documento {{ shown()?.customer?.nuip }} · {{ shown()?.at | date:'hh:mm:ss a' }}
+        </p>
+
+        @if (daysLeft() !== null && daysLeft()! <= 7) { <p
+            class="mt-2 rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-sm font-medium text-amber-200">
+            {{ daysLeft()! <= 0 ? 'Tu membresía vence hoy' : 'Tu membresía vence en ' + daysLeft() + (daysLeft()===1
+                ? ' día' : ' días' ) }} </p>
+                }
+
+                }
+
+                @case ('denied') {
+
+                <div class="avatar shake denied-icon">
+                    <svg viewBox="0 0 24 24" class="size-14" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                </div>
+
+                <p class="pill">Acceso denegado</p>
+
+                <h2 class="title">{{ reasonTitle(shown()?.reason ?? null) }}</h2>
+
+                <p class="subtitle max-w-md">{{ reasonHint(shown()?.reason ?? null) }}</p>
+
+                <p class="mt-1 text-sm text-slate-500">{{ shown()?.at | date:'hh:mm:ss a' }}</p>
+
+                }
+
+                @case ('enroll-ok') {
+
+                <div class="avatar pop glyph">
+                    <svg viewBox="0 0 24 24" class="size-16" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M5 12.5l4.5 4.5L19 7.5" />
+                    </svg>
+                </div>
+
+                <p class="pill">Registro completado</p>
+
+                <h2 class="title">{{ enrollInfo()?.title }}</h2>
+
+                <p class="subtitle">{{ enrollInfo()?.subtitle }}</p>
+
+                }
+
+                @case ('enroll-error') {
+
+                <div class="avatar shake glyph">
+                    <svg viewBox="0 0 24 24" class="size-14" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                </div>
+
+                <p class="pill">No se pudo registrar</p>
+
+                <h2 class="title">{{ enrollInfo()?.title }}</h2>
+
+                <p class="subtitle max-w-md">{{ enrollInfo()?.subtitle }}</p>
+
+                }
+
+                @default {
+
+                <div class="orb" aria-hidden="true">
+                    <div class="scan"></div>
+                </div>
+
+                <p class="eyebrow">{{ copy().eyebrow }}</p>
+
+                <h2 class="title">{{ copy().title }}</h2>
+
+                <p class="subtitle">{{ copy().subtitle }}</p>
+
+                @if (view() === 'enroll') {
+                <div class="mt-5 flex flex-col items-center gap-2">
+                    <div class="flex items-center gap-2" aria-hidden="true">
+                        @for (i of [0, 1, 2]; track i) {
+                        <span class="h-1.5 w-12 rounded-full transition-colors"
+                            [class]="i <= stepIndex() ? 'accent-bg' : 'bg-white/15'"></span>
+                        }
+                    </div>
+                    <p class="text-xs text-slate-400">Paso {{ stepIndex() + 1 }} de 3</p>
+                </div>
+                }
+
+                @if (view() === 'idle') {
+                <p class="mt-6 flex items-center gap-2 text-xs text-slate-400">
+                    <svg viewBox="0 0 24 24" class="size-4 accent-text" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M8 12.5l2.5 2.5L16 9.5" />
+                    </svg>
+                    La huella se valida directamente en el lector
+                </p>
+                }
+
+                }
+
+                }
+
+    </div>
+
+    <!-- Pie -->
+    <div class="relative z-10 flex items-center justify-between text-[10px] uppercase tracking-widest text-slate-500">
+        <span>Gym POS · Control biométrico</span>
+        @if (device(); as d) {
+        <span>{{ d.deviceId }}</span>
+        }
+    </div>
+
+</section>
