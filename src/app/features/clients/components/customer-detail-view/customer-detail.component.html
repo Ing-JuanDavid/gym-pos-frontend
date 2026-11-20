@@ -1,0 +1,272 @@
+@if(loading()) {
+
+<div class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-500">
+    Cargando cliente...
+</div>
+
+} @else if(customer(); as customer) {
+
+<div class="space-y-6">
+
+    <!-- Header -->
+
+    <div class="flex items-center justify-between">
+
+        <div>
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Gestión de Clientes
+            </p>
+
+            <h1 class="mt-2 text-4xl font-bold text-slate-800">
+                {{ customer.firstName }}
+                {{ customer.lastName }}
+            </h1>
+
+            <p class="mt-2 text-slate-500">
+                Detalle completo del cliente
+            </p>
+
+        </div>
+
+        <a routerLink="/customers" class="rounded-xl border border-slate-200 px-4 py-2 hover:bg-slate-50">
+            Volver
+        </a>
+
+    </div>
+
+    <!-- Perfil -->
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+        <div class="flex items-center gap-6">
+
+            @if(photoFor(customer); as photo) {
+
+            <img [src]="photo" [alt]="customer.firstName" class="h-28 w-28 rounded-full object-cover" />
+
+            } @else {
+
+            <div
+                class="flex h-28 w-28 items-center justify-center rounded-full bg-indigo-100 text-3xl font-bold text-indigo-600">
+                {{ customer.firstName[0] }}
+                {{ customer.lastName[0] }}
+            </div>
+
+            }
+
+            <div>
+
+                <h2 class="text-2xl font-bold text-slate-800">
+                    {{ customer.firstName }}
+                    {{ customer.lastName }}
+                </h2>
+
+                <p class="mt-1 text-slate-500">
+                    Documento:
+                    {{ customer.nuip }}
+                </p>
+
+                @if(customer.membershipName) {
+
+                <span class="mt-3 inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+                    {{ customer.membershipName }}
+                </span>
+
+                } @else {
+
+                <span class="mt-3 inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600">
+                    Sin membresía
+                </span>
+
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- KPI -->
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Documento
+            </p>
+
+            <h2 class="mt-2 text-2xl font-bold text-slate-800">
+                {{ customer.nuip }}
+            </h2>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Membresía
+            </p>
+
+            <h2 class="mt-2 text-2xl font-bold text-indigo-600">
+                {{ customer.membershipName || 'Ninguna' }}
+            </h2>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+            <p class="text-xs uppercase tracking-widest text-slate-400">
+                Última asistencia
+            </p>
+
+            <h2 class="mt-2 text-lg font-bold text-slate-800">
+
+                @if(customer.lastAttendance) {
+
+                {{ customer.lastAttendance | date:'dd MMM yyyy'}}
+
+                } @else {
+
+                Sin registros
+
+                }
+
+            </h2>
+
+        </div>
+
+    </div>
+
+    <!-- Información personal -->
+
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+
+        <div class="border-b border-slate-200 p-5">
+
+            <h2 class="font-semibold text-slate-800">
+                Información Personal
+            </h2>
+
+        </div>
+
+        <div class="grid gap-6 p-6 md:grid-cols-2">
+
+            <div>
+
+                <p class="text-sm text-slate-400">
+                    Documento
+                </p>
+
+                <p class="mt-1 font-medium">
+                    {{ customer.nuip }}
+                </p>
+
+            </div>
+
+            <div>
+
+                <p class="text-sm text-slate-400">
+                    Teléfono
+                </p>
+
+                <p class="mt-1 font-medium">
+                    {{ customer.phone || 'No registrado' }}
+                </p>
+
+            </div>
+
+            <div>
+
+                <p class="text-sm text-slate-400">
+                    Correo
+                </p>
+
+                <p class="mt-1 font-medium">
+                    {{ customer.email || 'No registrado' }}
+                </p>
+
+            </div>
+
+            <div>
+
+                <p class="text-sm text-slate-400">
+                    Sexo
+                </p>
+
+                <p class="mt-1 font-medium">
+                    {{ customer.sex || 'No registrado' }}
+                </p>
+
+            </div>
+
+            <div>
+
+                <p class="text-sm text-slate-400">
+                    Fecha de nacimiento
+                </p>
+
+                <p class="mt-1 font-medium">
+
+                    @if(customer.birth) {
+
+                    {{ customer.birth | date:'dd/MM/yyyy' }}
+
+                    } @else {
+
+                    No registrada
+
+                    }
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Actividad -->
+
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+
+        <div class="border-b border-slate-200 p-5">
+
+            <h2 class="font-semibold text-slate-800">
+                Actividad reciente
+            </h2>
+
+        </div>
+
+        <div class="p-6">
+
+            @if(customer.lastAttendance) {
+
+            <div class="rounded-xl bg-slate-50 p-4">
+
+                <p class="font-medium text-slate-700">
+                    Última asistencia registrada
+                </p>
+
+                <p class="mt-2 text-slate-600">
+                    {{ customer.lastAttendance | date:'dd MMM yyyy, HH:mm' }}
+                </p>
+
+            </div>
+
+            } @else {
+
+            <div class="rounded-xl bg-slate-50 p-4 text-slate-500">
+                No se encontraron asistencias registradas.
+            </div>
+
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+}

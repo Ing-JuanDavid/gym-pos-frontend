@@ -6,50 +6,70 @@ import { MembershipListComponent } from './features/memberships/pages/membership
 import { SaleListComponent } from './features/sales/pages/sale.component';
 import { AccessControlPage } from './features/access-control/pages/access-control.component';
 import { AttendancePageComponent } from './features/attendances/pages/attendance-page.component';
-CustomerListComponent
+import { CustomerDetailComponent } from './features/clients/components/customer-detail-view/customer-detail.component';
+import { LoginComponent } from './features/login/login-page.component';
+import { authGuard } from './core/guards/auth.guard';
+
 export const routes: Routes = [
+
+    {
+        path: 'login',
+        component: LoginComponent
+    },
+
     {
         path: '',
         component: DashboardLayoutComponent,
+        canActivate: [authGuard],
         children: [
+
             {
                 path: '',
-                redirectTo: 'dashboard',
+                redirectTo: 'access-control',
                 pathMatch: 'full'
             },
+
             {
                 path: 'customers',
                 component: CustomerListComponent
             },
+
+            {
+                path: 'customers/:nuip',
+                component: CustomerDetailComponent
+            },
+
             {
                 path: 'plans',
                 component: PlanListComponent
-            }
-            ,
+            },
+
             {
                 path: 'memberships',
                 component: MembershipListComponent
-            }
-            ,
+            },
+
             {
                 path: 'sales',
                 component: SaleListComponent
-            }
-            ,
+            },
+
             {
                 path: 'access-control',
                 component: AccessControlPage
-            }
-            ,
+            },
+
             {
                 path: 'attendance',
                 component: AttendancePageComponent
             }
+
         ]
     },
+
     {
         path: '**',
-        redirectTo: 'dashboard'
+        redirectTo: 'login'
     }
 
 ];

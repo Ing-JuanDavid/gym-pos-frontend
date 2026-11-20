@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LucideDynamicIcon, LucideCalendarDays, LucideClipboardList, LucideCreditCard, LucideLayoutDashboard, LucideMonitor, LucidePackage, LucideShield, LucideShoppingCart, LucideUsers, LucideWallet, LucideZap } from '@lucide/angular';
+import { AuthService } from '../../core/services/auth.service';
+
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,6 +20,17 @@ import { LucideDynamicIcon, LucideCalendarDays, LucideClipboardList, LucideCredi
   templateUrl: './sidebar.component.html'
 })
 export class SidebarComponent {
+
+
+
+
+  private readonly auth = inject(AuthService)
+
+  currentUser =
+    this.auth.getCurrentUser();
+
+  private readonly router =
+    inject(Router);
 
   operationMenu = [
     {
@@ -74,5 +88,16 @@ export class SidebarComponent {
       icon: LucideMonitor
     }
   ];
+
+
+  logout(): void {
+
+    this.auth.logout();
+
+    this.router.navigate([
+      '/login'
+    ]);
+
+  }
 
 }

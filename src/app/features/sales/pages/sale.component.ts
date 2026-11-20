@@ -20,6 +20,7 @@ import { SalePaymentModalComponent } from '../components/sale-payment-modal.comp
 import { SaleResumeModalComponent } from '../components/sale-resume-modal.component';
 
 import { SaleCreateRequest } from '../models/sale.dto';
+import { SaleMapper } from '../mappers/sale.mapper';
 
 type PeriodMode = 'DAY' | 'MONTH' | 'ALL';
 
@@ -318,6 +319,8 @@ export class SaleListComponent implements OnInit {
                     this.closeCreateModal();
 
                     this.loadSales();
+
+                    console.log(sale)
 
                     this.selectedSale.set(sale);
 

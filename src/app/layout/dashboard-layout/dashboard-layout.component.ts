@@ -15,4 +15,6 @@ import { TopbarComponent } from '../topbar/topbar.component';
   templateUrl: './dashboard-layout.component.html',
 
 })
-export class DashboardLayoutComponent { }
+export class DashboardLayoutComponent {
+
+}

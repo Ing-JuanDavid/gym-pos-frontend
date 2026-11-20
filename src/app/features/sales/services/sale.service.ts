@@ -83,10 +83,10 @@ export class SaleService {
         data: SaleCreateRequest
     ): Observable<Sale> {
 
-        return this.http.post<Sale>(
+        return this.http.post<SaleDto>(
             this.apiUrl,
             data
-        );
+        ).pipe(map(sale => SaleMapper.toModel(sale)));
 
     }
 

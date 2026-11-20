@@ -1,0 +1,42 @@
+<div class="flex min-h-screen items-center justify-center bg-slate-100">
+
+    <div class="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm">
+
+        <h1 class="mb-2 text-center text-3xl font-bold text-slate-800">
+            GymPOS
+        </h1>
+
+        <p class="mb-6 text-center text-slate-500">
+            Iniciar sesión
+        </p>
+
+        <div class="space-y-4">
+
+            <input [(ngModel)]="username" placeholder="Usuario"
+                class="w-full rounded-xl border border-slate-200 px-4 py-3" />
+
+            <input [(ngModel)]="password" type="password" placeholder="Contraseña"
+                class="w-full rounded-xl border border-slate-200 px-4 py-3" />
+
+            @if(error) {
+
+            <div class="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+                {{ error }}
+            </div>
+
+            }
+
+            <button (click)="login()" class="w-full rounded-xl bg-indigo-600 py-3 text-white hover:bg-indigo-700">
+                Ingresar
+            </button>
+
+        </div>
+
+        <div class="mt-6 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+            Usuario: <strong>admin</strong><br>
+            Contraseña: <strong>admin123</strong>
+        </div>
+
+    </div>
+
+</div>

@@ -1,9 +1,12 @@
 import {
   Component,
+  computed,
   inject,
   OnInit,
-  signal
+  signal,
 } from '@angular/core';
+
+import { RouterLink } from '@angular/router';
 
 import { CustomerService } from '../../services/customer.service';
 
@@ -17,7 +20,7 @@ import { DatePipe } from '@angular/common';
   selector: 'app-client-list',
   standalone: true,
   templateUrl: './customer-list.component.html',
-  imports: [CustomerEditModalComponent, ClientCreateComponent, CapturePhotoModalComponent, DatePipe]
+  imports: [CustomerEditModalComponent, ClientCreateComponent, CapturePhotoModalComponent, DatePipe, RouterLink]
 })
 export class CustomerListComponent implements OnInit {
 
@@ -33,6 +36,9 @@ export class CustomerListComponent implements OnInit {
   loading =
     signal(true);
 
+  searchTerm =
+    signal('');
+
   selectedCustomer = signal<Customer | null>(null);
 
   modalOpen = signal(false);
@@ -47,6 +53,37 @@ export class CustomerListComponent implements OnInit {
 
   /** Clientes cuya imagen no cargó: se vuelve a mostrar las iniciales. */
   private readonly brokenPhotos = signal<ReadonlySet<number>>(new Set());
+
+  filteredCustomers = computed(() => {
+
+    const term =
+      this.searchTerm()
+        .trim()
+        .toLowerCase();
+
+    if (!term) {
+      return this.customers();
+    }
+
+    return this.customers().filter(customer => {
+
+      const fullName =
+        `${customer.firstName} ${customer.lastName}`
+          .toLowerCase();
+
+      const document =
+        customer.nuip
+          .toString();
+
+      return (
+        fullName.includes(term) ||
+        document.includes(term)
+      );
+
+    });
+
+  });
+
 
   ngOnInit(): void {
 
